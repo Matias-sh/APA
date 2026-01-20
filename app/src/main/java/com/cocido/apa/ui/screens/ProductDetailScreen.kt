@@ -1,11 +1,16 @@
 package com.cocido.apa.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
@@ -15,191 +20,299 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.cocido.apa.ui.components.*
-import com.cocido.apa.ui.theme.APABlue
-import com.cocido.apa.ui.theme.APACardBackground
-import com.cocido.apa.ui.theme.APAGray
-import com.cocido.apa.ui.theme.APALightGray
+import com.cocido.apa.ui.theme.*
+import com.cocido.apa.ui.components.LogoSize
 
 @Composable
 fun ProductDetailScreen(
+    product: Product?,
     productId: String,
     onBackClick: () -> Unit,
-    onAddToCart: () -> Unit,
+    onAddToCart: (Int) -> Unit,
+    onNavigateToCart: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var quantity by remember { mutableStateOf(1) }
+    var showSuccessMessage by remember { mutableStateOf(false) }
     
-    // Datos del producto - en producción vendría de un ViewModel
-    val product = remember(productId) {
-        Product(productId, "Arroz Lucchetti 1kg", "3.99999")
-    }
+    val productData = product ?: Product(productId, "Producto", "0")
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp)
+            .background(APAWhite)
     ) {
-        // Logo
-        APALogo(modifier = Modifier.padding(bottom = 16.dp))
+        // StatusBar
+        StatusBar()
         
-        // Barra de búsqueda
-        SearchBar(
-            searchText = "Arroz 1kg",
-            onSearchTextChange = { },
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        
-        // Card del producto
-        Card(
+        // Header con botón de volver
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = CardDefaults.cardColors(containerColor = APACardBackground)
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Volver",
+                    tint = APADarkBlue,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            
+            APALogo(size = LogoSize.SMALL)
+            
+            // Espacio para centrar el logo
+            Spacer(modifier = Modifier.size(40.dp))
+        }
+        
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
+        ) {
+            // Barra de búsqueda
+            SearchBar(
+                searchText = "",
+                onSearchTextChange = { },
+                onClick = { },
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
+            
+            // Card del producto - Diseño mejorado
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    .padding(bottom = 24.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = APACardBackground),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                // Imagen del producto
-                Box(
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(120.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(ComposeColor.White),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (product.imageUrl.isNotEmpty()) {
-                        AsyncImage(
-                            model = product.imageUrl,
-                            contentDescription = product.name,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Fit
-                        )
-                    } else {
-                        Text(
-                            text = product.name,
-                            fontSize = 12.sp,
-                            color = ComposeColor.Gray
-                        )
-                    }
-                    
-                    // Icono de carrito
-                    IconButton(
-                        onClick = onAddToCart,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Agregar al carrito",
-                            tint = APABlue,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-                
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Selector de unidades
-                    Text(
-                        text = "unidades",
-                        fontSize = 12.sp,
-                        color = APAGray,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    
-                    // Controles de cantidad
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                    // Imagen del producto - más grande y centrada
+                    Box(
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(200.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(APAWhite)
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        IconButton(
-                            onClick = { if (quantity > 1) quantity-- },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Remove,
-                                contentDescription = "Reducir",
-                                tint = APABlue
-                            )
-                        }
-                        
-                        Text(
-                            text = quantity.toString(),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = APABlue,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-                        
-                        IconButton(
-                            onClick = { quantity++ },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = "Aumentar",
-                                tint = APABlue
-                            )
+                        when {
+                            productData.imageRes != null -> {
+                                Image(
+                                    painter = painterResource(id = productData.imageRes),
+                                    contentDescription = productData.name,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
+                            productData.imageUrl.isNotEmpty() -> {
+                                AsyncImage(
+                                    model = productData.imageUrl,
+                                    contentDescription = productData.name,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
+                            else -> {
+                                Text(
+                                    text = productData.name,
+                                    fontSize = 14.sp,
+                                    color = APAGray,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
+                    
+                    Spacer(modifier = Modifier.height(20.dp))
                     
                     // Nombre del producto
                     Text(
-                        text = product.name,
-                        fontSize = 16.sp,
+                        text = productData.name,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = ComposeColor.Black,
-                        modifier = Modifier.padding(bottom = 4.dp)
+                        color = APADarkBlue,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = 12.dp)
                     )
                     
-                    // Precio
+                    // Precio unitario
                     Text(
-                        text = "${product.price} x$quantity",
-                        fontSize = 16.sp,
+                        text = productData.price,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = ComposeColor.Black
+                        color = APABlue,
+                        modifier = Modifier.padding(bottom = 24.dp)
                     )
+                    
+                    // Selector de unidades
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(bottom = 24.dp)
+                    ) {
+                        Text(
+                            text = "Cantidad",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = APADarkGrayAlt,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        
+                        // Controles de cantidad - mejorados
+                        Row(
+                            modifier = Modifier
+                                .background(APAWhite, RoundedCornerShape(16.dp))
+                                .border(1.dp, APALightGray, RoundedCornerShape(16.dp))
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            IconButton(
+                                onClick = { if (quantity > 1) quantity-- },
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Remove,
+                                    contentDescription = "Reducir",
+                                    tint = if (quantity > 1) APABlue else APALightGray,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            
+                            Text(
+                                text = quantity.toString(),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = APADarkBlue,
+                                modifier = Modifier.width(40.dp),
+                                textAlign = TextAlign.Center
+                            )
+                            
+                            IconButton(
+                                onClick = { quantity++ },
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Aumentar",
+                                    tint = APABlue,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+                        
+                        // Total calculado
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Total: ${productData.price} x $quantity",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = APAGray
+                        )
+                    }
                 }
             }
-        }
-        
-        // Sección "También puede interesarte"
-        Text(
-            text = "También puede interesarte",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = APAGray,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-        
-        // Chips de sugerencias
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(bottom = 80.dp)
-        ) {
-            FilterChip(
-                selected = false,
-                onClick = { },
-                label = { Text("Lata de verduras mixtas", fontSize = 12.sp) }
+            
+            // Botón principal: Agregar al carrito
+            APAButton(
+                text = "Agregar al carrito",
+                onClick = {
+                    onAddToCart(quantity)
+                    showSuccessMessage = true
+                },
+                isPrimary = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
             )
-            FilterChip(
-                selected = false,
-                onClick = { },
-                label = { Text("Amanda", fontSize = 12.sp) }
+            
+            // Mensaje de éxito
+            if (showSuccessMessage) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = APABlue.copy(alpha = 0.1f))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "✓ Producto agregado al carrito",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = APABlue
+                        )
+                        
+                        TextButton(
+                            onClick = {
+                                showSuccessMessage = false
+                                onNavigateToCart()
+                            }
+                        ) {
+                            Text(
+                                text = "Ver carrito",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = APABlue
+                            )
+                        }
+                    }
+                }
+            }
+            
+            // Sección "También puede interesarte"
+            Text(
+                text = "También puede interesarte",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = APADarkBlue,
+                modifier = Modifier.padding(vertical = 16.dp)
             )
+            
+            // Chips de sugerencias
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(bottom = 24.dp)
+            ) {
+                FilterChip(
+                    selected = false,
+                    onClick = { },
+                    label = { Text("Lata de verduras mixtas", fontSize = 14.sp) }
+                )
+                FilterChip(
+                    selected = false,
+                    onClick = { },
+                    label = { Text("Amanda", fontSize = 14.sp) }
+                )
+            }
         }
     }
 }

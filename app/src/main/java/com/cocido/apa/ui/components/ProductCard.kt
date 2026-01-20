@@ -1,5 +1,6 @@
 package com.cocido.apa.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,12 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color as ComposeColor
 import coil.compose.AsyncImage
+import com.cocido.apa.R
 import com.cocido.apa.ui.theme.APABlue
 import com.cocido.apa.ui.theme.APACardBackground
 import com.cocido.apa.ui.theme.APALightGray
@@ -35,6 +38,7 @@ data class Product(
     val name: String,
     val price: String,
     val imageUrl: String = "",
+    val imageRes: Int? = null,
     val quantity: Int = 0,
     val isInCart: Boolean = false
 )
@@ -76,20 +80,31 @@ fun ProductCard(
                     .height(100.dp),
                 contentAlignment = Alignment.Center
             ) {
-                if (product.imageUrl.isNotEmpty()) {
+                when {
+                    product.imageRes != null -> {
+                        Image(
+                            painter = painterResource(id = product.imageRes),
+                            contentDescription = product.name,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                    product.imageUrl.isNotEmpty() -> {
                     AsyncImage(
                         model = product.imageUrl,
                         contentDescription = product.name,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit
                     )
-                } else {
+                    }
+                    else -> {
                     // Placeholder si no hay imagen
                     Text(
                         text = product.name,
                         fontSize = 12.sp,
                         color = ComposeColor.Gray
                     )
+                    }
                 }
             }
             

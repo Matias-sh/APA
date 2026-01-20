@@ -1,0 +1,107 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "Arroz Lucchetti 1kg",
+      "price": "3.99999",
+      "imageRes": "arroz_lucchetti"
+    },
+    {
+      "id": "2",
+      "name": "Arroz Gallo Largo 1kg",
+      "price": "3.99999",
+      "imageRes": "arroz_gallo"
+    },
+    {
+      "id": "3",
+      "name": "Arroz Amanda 1kg",
+      "price": "1,99999",
+      "imageRes": "arroz_amanda"
+    },
+    {
+      "id": "4",
+      "name": "Arroz Gallo Largo 1kg",
+      "price": "2,99999",
+      "imageRes": "arroz_gallo"
+    },
+    {
+      "id": "5",
+      "name": "Arroz Don Carlos 1kg",
+      "price": "1,49999",
+      "imageRes": "arroz_doncarlos"
+    },
+    {
+      "id": "6",
+      "name": "Arroz La Esquina 1kg",
+      "price": "3,49999",
+      "imageRes": "arroz_laesquina"
+    }
+  ],
+  "savedCarts": [
+    {
+      "id": "1",
+      "name": "Compras del mes",
+      "productCount": 200,
+      "items": [
+        {
+          "productId": "1",
+          "quantity": 5
+        },
+        {
+          "productId": "2",
+          "quantity": 3
+        },
+        {
+          "productId": "3",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Carne",
+      "productCount": 12,
+      "items": [
+        {
+          "productId": "1",
+          "quantity": 2
+        },
+        {
+          "productId": "4",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Limpieza",
+      "productCount": 30,
+      "items": [
+        {
+          "productId": "5",
+          "quantity": 4
+        },
+        {
+          "productId": "6",
+          "quantity": 3
+        }
+      ]
+    }
+  ],
+  "lastPurchase": {
+    "items": [
+      {
+        "productId": "1",
+        "quantity": 3
+      },
+      {
+        "productId": "2",
+        "quantity": 2
+      },
+      {
+        "productId": "5",
+        "quantity": 1
+      }
+    ]
+  }
+}

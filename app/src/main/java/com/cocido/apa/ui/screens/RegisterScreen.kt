@@ -1,5 +1,7 @@
 package com.cocido.apa.ui.screens
 
+// Diseño base: screen-2.png (APA_png)
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -44,7 +46,12 @@ fun RegisterScreen(
                 .weight(1f)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 32.dp, vertical = 64.dp),
+                .padding(
+                    start = 32.dp,
+                    end = 32.dp,
+                    top = 112.dp,
+                    bottom = 64.dp
+                ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -105,34 +112,27 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             
-            // Botón Ya tengo cuenta
-            APAButton(
-                text = "Ya tengo cuenta",
-                onClick = onLoginClick,
-                isPrimary = false,
+            // Texto intermedio y botón Iniciar sesión (orden como en diseño)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                Text(
+                    text = "¿Ya tenés cuenta?",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = APAGray
+                )
+                APAButton(
+                    text = "Iniciar Sesión",
+                    onClick = onLoginClick,
+                    isPrimary = false,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
         
-        // Handle de navegación inferior
-        NavigationHandle()
     }
 }
 
-@Composable
-private fun NavigationHandle(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(24.dp)
-            .background(APAWhite.copy(alpha = 0.5f))
-    ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width(140.dp)
-                .height(4.dp)
-                .background(APALightGray, RoundedCornerShape(12.dp))
-        )
-    }
-}

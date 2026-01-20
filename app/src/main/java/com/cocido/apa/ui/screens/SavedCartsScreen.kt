@@ -1,5 +1,7 @@
 package com.cocido.apa.ui.screens
 
+// Diseño base: carrito-1.png (APA_png)
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,7 +13,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color as ComposeColor
@@ -19,21 +25,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cocido.apa.data.AppDataRepository
 import com.cocido.apa.ui.components.*
 import com.cocido.apa.ui.theme.*
 import com.cocido.apa.ui.components.LogoSize
 
 @Composable
 fun SavedCartsScreen(
+    cartItemCount: Int = 0,
+    repository: AppDataRepository,
     onNavigate: (String) -> Unit = {},
+    onLoadCart: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val savedCarts = remember {
-        listOf(
-            SavedCart("Compras del mes", 200),
-            SavedCart("Carne", 12),
-            SavedCart("Limpieza", 30)
-        )
+    var savedCartsData by remember { mutableStateOf<List<com.cocido.apa.data.SavedCartJson>>(emptyList()) }
+    
+    LaunchedEffect(Unit) {
+        savedCartsData = repository.getSavedCarts()
     }
 
     Column(
@@ -76,10 +84,10 @@ fun SavedCartsScreen(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                savedCarts.forEach { cart ->
+                savedCartsData.forEach { cart ->
                     SavedCartCard(
-                        cart = cart,
-                        onClick = { onNavigate("cart") },
+                        cart = SavedCart(cart.name, cart.productCount),
+                        onClick = { onLoadCart(cart.id) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -107,11 +115,8 @@ fun SavedCartsScreen(
                     "settings" -> onNavigate("settings")
                 }
             },
-            cartItemCount = 0
+            cartItemCount = cartItemCount
         )
-        
-        // Handle de navegación inferior
-        NavigationHandle()
     }
 }
 
@@ -176,20 +181,3 @@ private fun SavedCartCard(
 }
 
 
-@Composable
-private fun NavigationHandle(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(24.dp)
-            .background(APAWhite.copy(alpha = 0.5f))
-    ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width(140.dp)
-                .height(4.dp)
-                .background(APALightGray, RoundedCornerShape(12.dp))
-        )
-    }
-}

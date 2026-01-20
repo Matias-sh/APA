@@ -1,5 +1,7 @@
 package com.cocido.apa.ui.screens
 
+// Diseño base: carrito-2.png (APA_png) - pestaña \"Yo\"
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,6 +29,7 @@ import com.cocido.apa.ui.components.LogoSize
 
 @Composable
 fun ProfileScreen(
+    cartItemCount: Int = 0,
     onNavigate: (String) -> Unit = {},
     onLogout: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -39,6 +42,16 @@ fun ProfileScreen(
         // StatusBar
         StatusBar()
         
+        // Header con logo centrado
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            APALogo(size = LogoSize.SMALL)
+        }
+        
         // Contenido principal
         Column(
             modifier = Modifier
@@ -48,11 +61,6 @@ fun ProfileScreen(
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Logo pequeño
-            APALogo(
-                size = LogoSize.SMALL,
-                modifier = Modifier.padding(bottom = 10.dp)
-            )
             
             // Profile Header
             Column(
@@ -211,11 +219,8 @@ fun ProfileScreen(
                     "settings" -> onNavigate("settings")
                 }
             },
-            cartItemCount = 0
+            cartItemCount = cartItemCount
         )
-        
-        // Handle de navegación inferior
-        NavigationHandle()
     }
 }
 
@@ -269,20 +274,3 @@ private fun MenuOptionCard(
     }
 }
 
-@Composable
-private fun NavigationHandle(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(24.dp)
-            .background(APAWhite.copy(alpha = 0.5f))
-    ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width(140.dp)
-                .height(4.dp)
-                .background(APALightGray, RoundedCornerShape(12.dp))
-        )
-    }
-}

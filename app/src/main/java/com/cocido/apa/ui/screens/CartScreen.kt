@@ -1,5 +1,8 @@
 package com.cocido.apa.ui.screens
 
+// Diseño base: carrito.png (APA_png)
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,11 +19,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cocido.apa.data.AppDataRepository
 import com.cocido.apa.ui.components.*
 import com.cocido.apa.ui.theme.*
 import com.cocido.apa.ui.components.LogoSize
@@ -32,25 +38,34 @@ data class SavedCart(
 
 @Composable
 fun CartScreen(
+    cartItems: Map<String, Int>,
+    products: List<Product>,
+    repository: AppDataRepository,
+    onQuantityChange: (String, Int) -> Unit,
+    onRemoveItem: (String) -> Unit,
+    onConfirmPurchase: () -> Unit,
+    onSaveCart: (String) -> Unit = {},
     onNavigate: (String) -> Unit = {},
     onProductClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val cartItems = remember {
-        listOf(
-            Product("1", "Arroz Lucchetti 1kg", "3.99999", quantity = 1, isInCart = true),
-            Product("2", "Arroz Gallo Largo 1kg", "3.99999", quantity = 8, isInCart = true),
-            Product("3", "Arroz Gallo Largo 1kg", "3.99999", quantity = 2, isInCart = true)
-        )
+    val itemsForUi = products
+        .mapNotNull { product ->
+            val qty = cartItems[product.id] ?: 0
+            if (qty > 0) product.copy(quantity = qty, isInCart = true) else null
+        }
+    
+    var savedCartsData by remember { mutableStateOf<List<com.cocido.apa.data.SavedCartJson>>(emptyList()) }
+    
+    fun refreshSavedCarts() {
+        savedCartsData = repository.getSavedCarts()
     }
     
-    val savedCarts = remember {
-        listOf(
-            SavedCart("Compras del mes", 200),
-            SavedCart("Carne", 12),
-            SavedCart("Limpieza", 30)
-        )
+    LaunchedEffect(Unit) {
+        refreshSavedCarts()
     }
+
+    var showSuccess by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -59,6 +74,16 @@ fun CartScreen(
     ) {
         // StatusBar
         StatusBar()
+        
+        // Header con logo centrado
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            APALogo(size = LogoSize.SMALL)
+        }
         
         // Contenido principal
         Column(
@@ -69,12 +94,6 @@ fun CartScreen(
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(10.dp))
-            
-            // Logo pequeño
-            APALogo(
-                size = LogoSize.SMALL,
-                modifier = Modifier.padding(bottom = 10.dp)
-            )
             
             // Headers
             Row(
@@ -102,11 +121,11 @@ fun CartScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
-                cartItems.forEach { product ->
+                itemsForUi.forEach { product ->
                     CartItemCard(
                         product = product,
-                        onQuantityChange = { },
-                        onRemove = { },
+                        onQuantityChange = { newQty -> onQuantityChange(product.id, newQty) },
+                        onRemove = { onRemoveItem(product.id) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -127,36 +146,80 @@ fun CartScreen(
                         fontWeight = FontWeight.Normal,
                         color = APADarkGrayAlt
                     )
+                    val totalText = itemsForUi.sumOf { it.quantity }.toString()
                     Text(
-                        text = "43,999.89",
+                        text = totalText,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = APADarkBlue
                     )
                 }
                 
+                if (showSuccess) {
+                    Text(
+                        text = "¡Compra confirmada!",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = APABlue
+                    )
+                }
+                
                 APAButton(
                     text = "Confirmar Compra",
-                    onClick = { },
+                    onClick = {
+                        onConfirmPurchase()
+                        showSuccess = true
+                    },
                     isPrimary = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    APAButton(
-                        text = "Guardar Carrito",
-                        onClick = { onNavigate("savedCarts") },
-                        isPrimary = false,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Bookmark,
-                        contentDescription = "Guardar",
-                        tint = APAWhite,
-                        modifier = Modifier.size(24.dp)
+                var showSaveDialog by remember { mutableStateOf(false) }
+                var cartName by remember { mutableStateOf("") }
+                
+                APAButton(
+                    text = "Guardar Carrito",
+                    onClick = { 
+                        if (itemsForUi.isNotEmpty()) {
+                            showSaveDialog = true
+                        }
+                    },
+                    isPrimary = false,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                if (showSaveDialog) {
+                    // Dialog simple para nombre del carrito
+                    androidx.compose.material3.AlertDialog(
+                        onDismissRequest = { showSaveDialog = false },
+                        title = { Text("Guardar carrito") },
+                        text = {
+                            APATextField(
+                                value = cartName,
+                                onValueChange = { cartName = it },
+                                placeholder = "Nombre del carrito",
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    if (cartName.isNotBlank()) {
+                                        onSaveCart(cartName)
+                                        refreshSavedCarts()
+                                        cartName = ""
+                                        showSaveDialog = false
+                                    }
+                                }
+                            ) {
+                                Text("Guardar")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showSaveDialog = false }) {
+                                Text("Cancelar")
+                            }
+                        }
                     )
                 }
                 
@@ -169,16 +232,18 @@ fun CartScreen(
             }
             
             // Carritos guardados
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.padding(bottom = 16.dp)
-            ) {
-                savedCarts.forEach { cart ->
-                    SavedCartCard(
-                        cart = cart,
-                        onClick = { onNavigate("savedCarts") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+            if (savedCartsData.isNotEmpty()) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.padding(bottom = 16.dp)
+                ) {
+                    savedCartsData.forEach { cart ->
+                        SavedCartCard(
+                            cart = SavedCart(cart.name, cart.productCount),
+                            onClick = { onNavigate("savedCarts") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
         }
@@ -194,11 +259,8 @@ fun CartScreen(
                     "settings" -> onNavigate("settings")
                 }
             },
-            cartItemCount = 0
+            cartItemCount = itemsForUi.sumOf { it.quantity }
         )
-        
-        // Handle de navegación inferior
-        NavigationHandle()
     }
 }
 
@@ -234,11 +296,20 @@ private fun CartItemCard(
                         .background(APAWhite, RoundedCornerShape(4.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = product.name.take(1),
-                        fontSize = 12.sp,
-                        color = APAGray
-                    )
+                    if (product.imageRes != null) {
+                        Image(
+                            painter = painterResource(id = product.imageRes),
+                            contentDescription = product.name,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    } else {
+                        Text(
+                            text = product.name.take(1),
+                            fontSize = 12.sp,
+                            color = APAGray
+                        )
+                    }
                 }
                 
                 Column(
@@ -385,20 +456,3 @@ private fun SavedCartCard(
     }
 }
 
-@Composable
-private fun NavigationHandle(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(24.dp)
-            .background(APAWhite.copy(alpha = 0.5f))
-    ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width(140.dp)
-                .height(4.dp)
-                .background(APALightGray, RoundedCornerShape(12.dp))
-        )
-    }
-}

@@ -1,5 +1,7 @@
 package com.cocido.apa.ui.screens
 
+// Diseño base: screen-1.png (APA_png)
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,7 +48,12 @@ fun LoginScreen(
                 .weight(1f)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 32.dp, vertical = 128.dp),
+                .padding(
+                    start = 32.dp,
+                    end = 32.dp,
+                    top = 112.dp,
+                    bottom = 64.dp
+                ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -74,7 +81,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             
-            // Olvidé mi contraseña
+            // Olvidé mi contraseña (centrado como link)
             Text(
                 text = "Olvidé mi contraseña",
                 fontSize = 14.sp,
@@ -82,7 +89,7 @@ fun LoginScreen(
                 color = APABlue,
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
                     .clickable(onClick = onForgotPasswordClick)
             )
             
@@ -122,8 +129,6 @@ fun LoginScreen(
             )
         }
         
-        // Handle de navegación inferior
-        NavigationHandle()
     }
 }
 
@@ -161,20 +166,3 @@ private fun CustomCheckbox(
     }
 }
 
-@Composable
-private fun NavigationHandle(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(24.dp)
-            .background(APAWhite.copy(alpha = 0.5f))
-    ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width(140.dp)
-                .height(4.dp)
-                .background(APALightGray, RoundedCornerShape(12.dp))
-        )
-    }
-}

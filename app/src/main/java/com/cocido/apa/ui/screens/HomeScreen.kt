@@ -1,5 +1,8 @@
 package com.cocido.apa.ui.screens
 
+// Diseño base: screen-3.png (APA_png)
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,7 +15,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.ui.text.font.FontWeight
@@ -25,9 +29,11 @@ import com.cocido.apa.ui.components.LogoSize
 
 @Composable
 fun HomeScreen(
+    cartItemCount: Int = 0,
     onNavigate: (String) -> Unit = {},
     onProductClick: (String) -> Unit = {},
     onAddToCart: (String) -> Unit = {},
+    onRepeatLastPurchase: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -50,11 +56,15 @@ fun HomeScreen(
             }
             
             item {
-                // Logo pequeño
-                APALogo(
-                    size = LogoSize.SMALL,
-                    modifier = Modifier.padding(bottom = 10.dp)
-                )
+                // Logo centrado en el header
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    APALogo(size = LogoSize.SMALL)
+                }
             }
             
             item {
@@ -97,7 +107,7 @@ fun HomeScreen(
                     ) {
                         APAButton(
                             text = "Repetir útlima compra",
-                            onClick = { },
+                            onClick = onRepeatLastPurchase,
                             isPrimary = false,
                             modifier = Modifier.weight(1f)
                         )
@@ -128,6 +138,7 @@ fun HomeScreen(
                         CategoryCard(
                             title = "OFERTAS\nDEL\nFINDE",
                             subtitle = "del 16 al 18 de enero",
+                            imageRes = com.cocido.apa.R.drawable.ofertas_del_finde,
                             onClick = { onNavigate("search") }
                         )
                     }
@@ -136,6 +147,7 @@ fun HomeScreen(
                     item {
                         CategoryCard(
                             title = "Frutas y Verduras",
+                            imageRes = com.cocido.apa.R.drawable.frutas_verduras,
                             onClick = { onNavigate("search") }
                         )
                     }
@@ -144,6 +156,7 @@ fun HomeScreen(
                     item {
                         CategoryCard(
                             title = "Bebidas",
+                            imageRes = com.cocido.apa.R.drawable.bebidas,
                             onClick = { onNavigate("search") }
                         )
                     }
@@ -152,6 +165,7 @@ fun HomeScreen(
                     item {
                         CategoryCard(
                             title = "Postres",
+                            imageRes = com.cocido.apa.R.drawable.postres,
                             onClick = { onNavigate("search") }
                         )
                     }
@@ -167,6 +181,7 @@ fun HomeScreen(
                     item {
                         CategoryCard(
                             title = "Limpieza",
+                            imageRes = com.cocido.apa.R.drawable.limpieza,
                             onClick = { onNavigate("search") }
                         )
                     }
@@ -193,11 +208,8 @@ fun HomeScreen(
                     "settings" -> onNavigate("settings")
                 }
             },
-            cartItemCount = 0
+            cartItemCount = cartItemCount
         )
-        
-        // Handle de navegación inferior
-        NavigationHandle()
     }
 }
 
@@ -206,54 +218,17 @@ private fun PromotionalBanner(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(APADarkBlue, APABlue)
-                ),
-                RoundedCornerShape(16.dp)
-            )
+            .background(ComposeColor.Transparent, RoundedCornerShape(16.dp))
     ) {
-        Column(
+        Image(
+            painter = painterResource(id = com.cocido.apa.R.drawable.descuentos_en_carnes),
+            contentDescription = "Descuentos en carnes",
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(
-                    text = "DESCUENTOS",
-                    fontSize = 28.8.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = APAWhite
-                )
-                Text(
-                    text = "EN CARNES",
-                    fontSize = 28.8.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = APAWhite
-                )
-            }
-            
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
-                Text(
-                    text = "DE HASTA",
-                    fontSize = 28.8.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = APAWhite,
-                    textAlign = TextAlign.Right
-                )
-                Text(
-                    text = "EL 25%",
-                    fontSize = 28.8.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = APAWhite,
-                    textAlign = TextAlign.Right
-                )
-            }
-        }
-        
+                .background(ComposeColor.Transparent, RoundedCornerShape(16.dp)),
+            contentScale = ContentScale.Crop
+        )
+
         // Indicadores de página (dots)
         Row(
             modifier = Modifier
@@ -287,6 +262,7 @@ private fun PromotionalBanner(modifier: Modifier = Modifier) {
 private fun CategoryCard(
     title: String,
     subtitle: String = "",
+    imageRes: Int? = null,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -308,13 +284,22 @@ private fun CategoryCard(
                     .background(APAWhite, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                // Placeholder para imagen de categoría
-                Text(
-                    text = title.take(1),
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = APABlue
-                )
+                if (imageRes != null) {
+                    Image(
+                        painter = painterResource(id = imageRes),
+                        contentDescription = title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit
+                    )
+                } else {
+                    // Fallback: letra inicial
+                    Text(
+                        text = title.take(1),
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = APABlue
+                    )
+                }
             }
             
             Text(
@@ -404,20 +389,3 @@ private fun HygieneBanner(
     }
 }
 
-@Composable
-private fun NavigationHandle(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(24.dp)
-            .background(APAWhite.copy(alpha = 0.5f))
-    ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width(140.dp)
-                .height(4.dp)
-                .background(APALightGray, RoundedCornerShape(12.dp))
-        )
-    }
-}

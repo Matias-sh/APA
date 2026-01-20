@@ -1,5 +1,7 @@
 package com.cocido.apa.ui.screens
 
+// Diseño base: screen-4.png (APA_png)
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,22 +26,21 @@ import com.cocido.apa.ui.components.LogoSize
 
 @Composable
 fun SearchScreen(
+    products: List<Product>,
+    cartItems: Map<String, Int>,
+    onUpdateQuantity: (String, Int) -> Unit,
+    onRemoveFromCart: (String) -> Unit,
+    cartItemCount: Int = 0,
     onNavigate: (String) -> Unit = {},
     onProductClick: (String) -> Unit = {},
     onAddToCart: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var searchText by remember { mutableStateOf("Arroz 1kg") }
-    
-    val products = remember {
-        listOf(
-            Product("1", "Arroz Lucchetti 1kg", "3.99999", quantity = 1, isInCart = true),
-            Product("2", "Arroz Gallo Largo 1kg", "3.99999"),
-            Product("3", "Arroz Amanda 1kg", "1,99999"),
-            Product("4", "Arroz Gallo Largo 1kg", "2,99999", quantity = 2, isInCart = true),
-            Product("5", "Arroz Don Carlos 1kg", "1,49999"),
-            Product("6", "Arroz La Esquina 1kg", "3,49999")
-        )
+
+    val uiProducts = products.map { base ->
+        val qty = cartItems[base.id] ?: 0
+        if (qty > 0) base.copy(quantity = qty, isInCart = true) else base.copy(quantity = 0, isInCart = false)
     }
 
     Column(
@@ -92,16 +93,22 @@ fun SearchScreen(
                         .padding(bottom = 16.dp)
                 ) {
                     items(
-                        count = products.size,
-                        key = { index -> products[index].id }
+                        count = uiProducts.size,
+                        key = { index -> uiProducts[index].id }
                     ) { index ->
-                        val product = products[index]
+                        val product = uiProducts[index]
                         ProductCard(
                             product = product,
                             onProductClick = { onProductClick(product.id) },
-                            onAddToCart = { onAddToCart(product.id) },
-                            onRemoveFromCart = { },
-                            onQuantityChange = { },
+                            onAddToCart = {
+                                onAddToCart(product.id)
+                            },
+                            onRemoveFromCart = {
+                                onRemoveFromCart(product.id)
+                            },
+                            onQuantityChange = { newQty ->
+                                onUpdateQuantity(product.id, newQty)
+                            },
                             modifier = Modifier.height(218.dp)
                         )
                     }
@@ -171,11 +178,8 @@ fun SearchScreen(
                     "settings" -> onNavigate("settings")
                 }
             },
-            cartItemCount = 3
+            cartItemCount = cartItemCount
         )
-        
-        // Handle de navegación inferior
-        NavigationHandle()
     }
 }
 
@@ -202,20 +206,3 @@ private fun SuggestionChip(
     }
 }
 
-@Composable
-private fun NavigationHandle(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(24.dp)
-            .background(APAWhite.copy(alpha = 0.5f))
-    ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width(140.dp)
-                .height(4.dp)
-                .background(APALightGray, RoundedCornerShape(12.dp))
-        )
-    }
-}
