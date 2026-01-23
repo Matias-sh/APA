@@ -5,7 +5,9 @@ package com.cocido.apa.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -20,6 +22,7 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.cocido.apa.ui.components.*
 import com.cocido.apa.ui.theme.*
 import com.cocido.apa.ui.components.LogoSize
@@ -37,7 +40,7 @@ fun SearchScreen(
     modifier: Modifier = Modifier
 ) {
     var searchText by remember { mutableStateOf("Arroz 1kg") }
-
+    
     val uiProducts = products.map { base ->
         val qty = cartItems[base.id] ?: 0
         if (qty > 0) base.copy(quantity = qty, isInCart = true) else base.copy(quantity = 0, isInCart = false)
@@ -63,11 +66,15 @@ fun SearchScreen(
             }
             
             item {
-                // Logo pequeño
-                APALogo(
-                    size = LogoSize.SMALL,
-                    modifier = Modifier.padding(bottom = 10.dp)
-                )
+                // Logo centrado en el header
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    APALogo(size = LogoSize.SMALL)
+                }
             }
             
             item {
@@ -85,12 +92,12 @@ fun SearchScreen(
                 // Grid de productos 2 columnas
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(700.dp)
-                        .padding(bottom = 16.dp)
+                        .heightIn(max = 600.dp)
                 ) {
                     items(
                         count = uiProducts.size,
@@ -109,7 +116,9 @@ fun SearchScreen(
                             onQuantityChange = { newQty ->
                                 onUpdateQuantity(product.id, newQty)
                             },
-                            modifier = Modifier.height(218.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(218.dp)
                         )
                     }
                 }
@@ -129,20 +138,25 @@ fun SearchScreen(
                     )
                     
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         SuggestionChip(
                             text = "Latas de verdura",
-                            onClick = { }
+                            onClick = { },
+                            modifier = Modifier.widthIn(min = 120.dp)
                         )
                         SuggestionChip(
                             text = "Amanda",
-                            onClick = { }
+                            onClick = { },
+                            modifier = Modifier.widthIn(min = 100.dp)
                         )
                         SuggestionChip(
                             text = "Carne",
-                            onClick = { }
+                            onClick = { },
+                            modifier = Modifier.widthIn(min = 80.dp)
                         )
                         
                         // Botón flecha

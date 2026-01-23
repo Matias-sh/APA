@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.cocido.apa.ui.components.*
 import com.cocido.apa.ui.theme.*
 import com.cocido.apa.ui.components.LogoSize
@@ -133,6 +134,17 @@ fun RegisterScreen(
             }
         }
         
+    }
+}
+
+@Preview(showBackground = true, name = "Register Screen")
+@Composable
+private fun RegisterScreenPreview() {
+    APATheme {
+        RegisterScreen(
+            onRegisterClick = {},
+            onLoginClick = {}
+        )
     }
 }
 

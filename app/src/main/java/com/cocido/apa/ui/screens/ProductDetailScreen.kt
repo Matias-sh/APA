@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import com.cocido.apa.ui.components.*
 import com.cocido.apa.ui.theme.*
@@ -83,49 +84,50 @@ fun ProductDetailScreen(
                 .weight(1f)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
-        ) {
-            // Barra de búsqueda
-            SearchBar(
+            .padding(horizontal = 16.dp)
+    ) {
+        // Barra de búsqueda
+        SearchBar(
                 searchText = "",
-                onSearchTextChange = { },
+            onSearchTextChange = { },
                 onClick = { },
                 modifier = Modifier.padding(bottom = 24.dp)
-            )
-            
+        )
+        
             // Card del producto - Diseño mejorado
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
                     .padding(bottom = 24.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = APACardBackground),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
+        ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                         .padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+            ) {
                     // Imagen del producto - más grande y centrada
-                    Box(
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(200.dp)
+                Box(
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 180.dp, max = 250.dp)
+                            .aspectRatio(1f)
                             .clip(RoundedCornerShape(12.dp))
                             .background(APAWhite)
                             .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    contentAlignment = Alignment.Center
+                ) {
                         when {
                             productData.imageRes != null -> {
                                 Image(
                                     painter = painterResource(id = productData.imageRes),
                                     contentDescription = productData.name,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Fit
-                                )
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
                             }
                             productData.imageUrl.isNotEmpty() -> {
                                 AsyncImage(
@@ -136,13 +138,13 @@ fun ProductDetailScreen(
                                 )
                             }
                             else -> {
-                                Text(
+                        Text(
                                     text = productData.name,
                                     fontSize = 14.sp,
                                     color = APAGray,
                                     textAlign = TextAlign.Center
-                                )
-                            }
+                        )
+                    }
                         }
                     }
                     
@@ -155,7 +157,11 @@ fun ProductDetailScreen(
                         fontWeight = FontWeight.Bold,
                         color = APADarkBlue,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(bottom = 12.dp)
+                        maxLines = 3,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp)
                     )
                     
                     // Precio unitario
@@ -164,70 +170,74 @@ fun ProductDetailScreen(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = APABlue,
-                        modifier = Modifier.padding(bottom = 24.dp)
-                    )
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 24.dp)
+                        )
                     
                     // Selector de unidades
-                    Column(
+                Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(bottom = 24.dp)
-                    ) {
-                        Text(
+                ) {
+                    Text(
                             text = "Cantidad",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = APADarkGrayAlt,
                             modifier = Modifier.padding(bottom = 12.dp)
-                        )
-                        
+                    )
+                    
                         // Controles de cantidad - mejorados
-                        Row(
+                    Row(
                             modifier = Modifier
                                 .background(APAWhite, RoundedCornerShape(16.dp))
                                 .border(1.dp, APALightGray, RoundedCornerShape(16.dp))
                                 .padding(horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            IconButton(
-                                onClick = { if (quantity > 1) quantity-- },
+                    ) {
+                        IconButton(
+                            onClick = { if (quantity > 1) quantity-- },
                                 modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
+                        ) {
+                            Icon(
                                     imageVector = Icons.Default.Remove,
-                                    contentDescription = "Reducir",
+                                contentDescription = "Reducir",
                                     tint = if (quantity > 1) APABlue else APALightGray,
                                     modifier = Modifier.size(24.dp)
-                                )
-                            }
-                            
-                            Text(
-                                text = quantity.toString(),
+                            )
+                        }
+                        
+                        Text(
+                            text = quantity.toString(),
                                 fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Bold,
                                 color = APADarkBlue,
                                 modifier = Modifier.width(40.dp),
                                 textAlign = TextAlign.Center
-                            )
-                            
-                            IconButton(
-                                onClick = { quantity++ },
+                        )
+                        
+                        IconButton(
+                            onClick = { quantity++ },
                                 modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
+                        ) {
+                            Icon(
                                     imageVector = Icons.Default.Add,
-                                    contentDescription = "Aumentar",
+                                contentDescription = "Aumentar",
                                     tint = APABlue,
                                     modifier = Modifier.size(24.dp)
-                                )
-                            }
+                            )
                         }
-                        
+                    }
+                    
                         // Total calculado
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text(
+                    Text(
                             text = "Total: ${productData.price} x $quantity",
-                            fontSize = 16.sp,
+                        fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             color = APAGray
                         )
@@ -246,8 +256,8 @@ fun ProductDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 12.dp)
-            )
-            
+                    )
+                    
             // Mensaje de éxito
             if (showSuccessMessage) {
                 Card(
@@ -277,42 +287,56 @@ fun ProductDetailScreen(
                                 onNavigateToCart()
                             }
                         ) {
-                            Text(
+                    Text(
                                 text = "Ver carrito",
                                 fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Bold,
                                 color = APABlue
-                            )
+                    )
                         }
-                    }
                 }
             }
-            
-            // Sección "También puede interesarte"
-            Text(
-                text = "También puede interesarte",
+        }
+        
+        // Sección "También puede interesarte"
+        Text(
+            text = "También puede interesarte",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = APADarkBlue,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-            
-            // Chips de sugerencias
-            Row(
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
+        
+        // Chips de sugerencias
+        Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.padding(bottom = 24.dp)
-            ) {
-                FilterChip(
-                    selected = false,
-                    onClick = { },
+        ) {
+            FilterChip(
+                selected = false,
+                onClick = { },
                     label = { Text("Lata de verduras mixtas", fontSize = 14.sp) }
-                )
-                FilterChip(
-                    selected = false,
-                    onClick = { },
+            )
+            FilterChip(
+                selected = false,
+                onClick = { },
                     label = { Text("Amanda", fontSize = 14.sp) }
-                )
+            )
             }
         }
+    }
+}
+
+@Preview(showBackground = true, name = "Product Detail Screen")
+@Composable
+private fun ProductDetailScreenPreview() {
+    APATheme {
+        ProductDetailScreen(
+            product = Product("1", "Arroz Lucchetti 1kg", "3.99999", imageRes = com.cocido.apa.R.drawable.arroz_lucchetti),
+            productId = "1",
+            onBackClick = {},
+            onAddToCart = {},
+            onNavigateToCart = {}
+        )
     }
 }

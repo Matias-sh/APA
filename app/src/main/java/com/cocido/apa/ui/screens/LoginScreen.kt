@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.cocido.apa.ui.components.*
 import com.cocido.apa.ui.theme.*
 import com.cocido.apa.ui.components.LogoSize
@@ -163,6 +164,18 @@ private fun CustomCheckbox(
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+
+@Preview(showBackground = true, name = "Login Screen")
+@Composable
+private fun LoginScreenPreview() {
+    APATheme {
+        LoginScreen(
+            onLoginClick = {},
+            onRegisterClick = {},
+            onForgotPasswordClick = {}
+        )
     }
 }
 

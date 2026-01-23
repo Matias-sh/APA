@@ -33,7 +33,7 @@ fun SearchBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(44.dp)
+            .heightIn(min = 40.dp, max = 44.dp)
             .background(
                 ComposeColor.White,
                 RoundedCornerShape(16.dp)

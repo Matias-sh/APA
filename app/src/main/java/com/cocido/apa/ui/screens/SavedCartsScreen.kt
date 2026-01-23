@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.cocido.apa.data.AppDataRepository
 import com.cocido.apa.ui.components.*
 import com.cocido.apa.ui.theme.*

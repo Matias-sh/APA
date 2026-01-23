@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.cocido.apa.ui.components.*
 import com.cocido.apa.ui.theme.*
 import com.cocido.apa.ui.components.LogoSize
@@ -111,29 +112,33 @@ fun ProfileScreen(
                             ),
                             RoundedCornerShape(16.dp)
                         )
-                        .padding(24.dp)
+                        .padding(20.dp)
                 ) {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
                             text = "Puntos APA",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Normal,
-                            color = APAWhite
+                            color = APAWhite,
+                            modifier = Modifier.fillMaxWidth()
                         )
                         Text(
                             text = "2,450",
-                            fontSize = 32.sp,
+                            fontSize = 36.sp,
                             fontWeight = FontWeight.Bold,
-                            color = APAWhite
+                            color = APAWhite,
+                            modifier = Modifier.fillMaxWidth()
                         )
                         Text(
                             text = "¡Canjea tus puntos por descuentos!",
-                            fontSize = 12.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Normal,
-                            color = APAWhite.copy(alpha = 0.8f)
+                            color = APAWhite.copy(alpha = 0.9f),
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }
@@ -271,6 +276,18 @@ private fun MenuOptionCard(
                 modifier = Modifier.size(24.dp)
             )
         }
+    }
+}
+
+@Preview(showBackground = true, name = "Profile Screen")
+@Composable
+private fun ProfileScreenPreview() {
+    APATheme {
+        ProfileScreen(
+            cartItemCount = 3,
+            onNavigate = {},
+            onLogout = {}
+        )
     }
 }
 

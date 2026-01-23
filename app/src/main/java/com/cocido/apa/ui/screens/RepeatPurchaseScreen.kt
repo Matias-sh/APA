@@ -17,12 +17,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import com.cocido.apa.ui.components.*
-import com.cocido.apa.ui.theme.APABlue
-import com.cocido.apa.ui.theme.APACardBackground
-import com.cocido.apa.ui.theme.APAGray
-import com.cocido.apa.ui.theme.APALightGray
+import com.cocido.apa.ui.theme.*
 
 @Composable
 fun RepeatPurchaseScreen(
@@ -153,5 +151,16 @@ fun RepeatPurchaseScreen(
                 label = { Text("Amanda", fontSize = 12.sp) }
             )
         }
+    }
+}
+
+@Preview(showBackground = true, name = "Repeat Purchase Screen")
+@Composable
+private fun RepeatPurchaseScreenPreview() {
+    APATheme {
+        RepeatPurchaseScreen(
+            onProductClick = {},
+            onAddToCart = {}
+        )
     }
 }

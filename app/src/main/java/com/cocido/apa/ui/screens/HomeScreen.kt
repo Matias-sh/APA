@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.cocido.apa.ui.components.*
 import com.cocido.apa.ui.theme.*
 import com.cocido.apa.ui.components.LogoSize
@@ -386,6 +387,20 @@ private fun HygieneBanner(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true, name = "Home Screen")
+@Composable
+private fun HomeScreenPreview() {
+    APATheme {
+        HomeScreen(
+            cartItemCount = 3,
+            onNavigate = {},
+            onProductClick = {},
+            onAddToCart = {},
+            onRepeatLastPurchase = {}
+        )
     }
 }
 

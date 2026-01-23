@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.cocido.apa.ui.components.*
 import com.cocido.apa.ui.theme.*
 import com.cocido.apa.ui.components.LogoSize
@@ -290,5 +291,16 @@ private fun SettingsOptionCard(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, name = "Settings Screen")
+@Composable
+private fun SettingsScreenPreview() {
+    APATheme {
+        SettingsScreen(
+            onNavigate = {},
+            onBackClick = {}
+        )
     }
 }

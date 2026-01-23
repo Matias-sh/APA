@@ -118,7 +118,21 @@ class AppDataRepository(private val context: Context) {
     // Obtener carritos guardados
     fun getSavedCarts(): List<SavedCartJson> {
         val data = loadData()
-        return data.savedCarts
+        // Corregir productCount si es incorrecto (debe ser número de productos únicos)
+        return data.savedCarts.map { cart ->
+            val actualCount = cart.items.size
+            if (cart.productCount != actualCount) {
+                // Actualizar el contador si es incorrecto
+                val updatedCart = cart.copy(productCount = actualCount)
+                // Guardar la corrección
+                val updatedCarts = data.savedCarts.map { if (it.id == cart.id) updatedCart else it }
+                val updatedData = data.copy(savedCarts = updatedCarts)
+                saveData(updatedData)
+                updatedCart
+            } else {
+                cart
+            }
+        }
     }
 
     // Obtener último carrito guardado (para "repetir última compra")
@@ -141,7 +155,7 @@ class AppDataRepository(private val context: Context) {
         val newCart = SavedCartJson(
             id = newCartId.toString(),
             name = name,
-            productCount = items.values.sum(),
+            productCount = items.size, // Número de productos únicos, no suma de cantidades
             items = items.map { (productId, quantity) ->
                 CartItemJson(productId, quantity)
             }
@@ -151,6 +165,25 @@ class AppDataRepository(private val context: Context) {
         )
         saveData(updatedData)
         return newCartId.toString()
+    }
+    
+    // Actualizar un carrito guardado
+    fun updateSavedCart(cartId: String, items: Map<String, Int>) {
+        val data = loadData()
+        val updatedCarts = data.savedCarts.map { cart ->
+            if (cart.id == cartId) {
+                cart.copy(
+                    productCount = items.size, // Número de productos únicos
+                    items = items.map { (productId, quantity) ->
+                        CartItemJson(productId, quantity)
+                    }
+                )
+            } else {
+                cart
+            }
+        }
+        val updatedData = data.copy(savedCarts = updatedCarts)
+        saveData(updatedData)
     }
 
     // Guardar última compra

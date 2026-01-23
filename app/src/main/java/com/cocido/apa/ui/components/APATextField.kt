@@ -44,7 +44,7 @@ fun APATextField(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .heightIn(min = 50.dp, max = 56.dp)
             .background(
                 ComposeColor.White,
                 RoundedCornerShape(16.dp)
